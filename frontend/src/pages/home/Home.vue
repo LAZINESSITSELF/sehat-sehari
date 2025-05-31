@@ -1,45 +1,105 @@
 <template>
-    <div class="space-y-12">
-      <!-- Bagian Hero -->
-      <section class="bg-green-100 py-12 text-center">
-        <h1 class="text-4xl font-bold mb-4">Sehat Sehari</h1>
-        <p class="text-xl mb-8">
-          Sehat Makan, Sehat Aktivitas, Sehat Hidup, bersama Sehat Sehari
-        </p>
-        <BaseButton 
-          :buttonClasses="'px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded'" 
-          @click="navigateToInput">
-          Mulai Sekarang
-        </BaseButton>
-      </section>
+    <div>
+      <h1 class="text-3xl font-bold mb-4">Selamat Datang di Sehat Sehari</h1>
+      <p class="mb-4">
+        Dapatkan rekomendasi menu dan olahraga yang sesuai dengan kebutuhan Anda.
+      </p>
+      
+      <form @submit.prevent="getRecommendation" class="space-y-4">
+        <div>
+          <label class="block">Usia:</label>
+          <input type="number" v-model="form.age" class="border rounded p-2" required/>
+        </div>
+        <div>
+          <label class="block">Tinggi (cm):</label>
+          <input type="number" v-model="form.height" class="border rounded p-2" required/>
+        </div>
+        <div>
+          <label class="block">Berat (kg):</label>
+          <input type="number" v-model="form.weight" class="border rounded p-2" required/>
+        </div>
+        <div>
+          <label class="block">Jenis Kelamin:</label>
+          <select v-model="form.gender" class="border rounded p-2" required>
+            <option value="male">Pria</option>
+            <option value="female">Wanita</option>
+          </select>
+        </div>
+        <div>
+          <label class="block">Tingkat Aktivitas:</label>
+          <select v-model="form.activity_level" class="border rounded p-2" required>
+            <option value="sedentary">Sedentary</option>
+            <option value="moderate">Moderate</option>
+            <option value="active">Active</option>
+          </select>
+        </div>
+        <div>
+          <label class="block">Tujuan Diet:</label>
+          <select v-model="form.goal" class="border rounded p-2" required>
+            <option value="lose">Turun Berat Badan</option>
+            <option value="maintain">Maintain</option>
+            <option value="gain">Tambah Berat Badan</option>
+          </select>
+        </div>
+        <div>
+          <label class="block">Durasi Olahraga (menit):</label>
+          <input type="number" v-model="form.exercise_minutes" class="border rounded p-2" required/>
+        </div>
+        <div>
+          <BaseButton type="submit" :buttonClasses="'px-4 py-2 bg-blue-500 text-white rounded'">
+            Dapatkan Rekomendasi
+          </BaseButton>
+        </div>
+      </form>
   
-      <section class="container mx-auto px-4">
-        <h2 class="text-2xl font-bold mb-4">Tentang Aplikasi</h2>
-        <p>
-          Aplikasi "Sehat Sehari" membantu Anda memperoleh rekomendasi menu makan dan olahraga
-          yang sesuai dengan kebutuhan nutrisi Anda. Cukup masukkan data diri seperti usia, tinggi,
-          berat, jenis kelamin, tingkat aktivitas, tujuan diet, serta durasi olahraga, dan sistem
-          kami akan memberikan saran terpersonal untuk menunjang gaya hidup sehat Anda!
-        </p>
-      </section>
+      <div v-if="recommendation" class="mt-8 p-4 border rounded">
+        <h2 class="text-xl font-bold">Hasil Rekomendasi</h2>
+        <p><strong>Kalori Harian:</strong> {{ recommendation.calories_needed }}</p>
+        <p><strong>Menu:</strong> {{ recommendation.menu_recommendation }}</p>
+        <p><strong>Olahraga:</strong> {{ recommendation.sport_recommendation }}</p>
+      </div>
+  
+      <div v-if="errorMessage" class="mt-4 text-red-600">
+        {{ errorMessage }}
+      </div>
     </div>
   </template>
   
   <script>
-  import BaseButton from '../../components/buttons/BaseButton.vue';
+  import BaseButton from "../../components/buttons/BaseButton.vue"
+  import { fetchRecommendation } from "../../composables/useApi.js"
   
   export default {
     name: "Home",
     components: {
       BaseButton,
     },
-    methods: {
-      navigateToInput() {
-        this.$router.push('/input');
-      },
+    data() {
+      return {
+        form: {
+          age: null,
+          height: null,
+          weight: null,
+          gender: "male",
+          activity_level: "sedentary",
+          goal: "maintain",
+          exercise_minutes: null,
+        },
+        recommendation: null,
+        errorMessage: ""
+      }
     },
-  };
+    methods: {
+      async getRecommendation() {
+        this.errorMessage = ""
+        try {
+          const result = await fetchRecommendation(this.form)
+          this.recommendation = result
+        } catch (err) {
+          console.error(err)
+          this.errorMessage = "Terjadi kesalahan saat mendapatkan rekomendasi."
+        }
+      }
+    }
+  }
   </script>
-  
-  <style scoped>
-  </style>
