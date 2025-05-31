@@ -1,4 +1,4 @@
-module github.com/LAZINESSITSELF/sehat-sehari.git
+module backend
 
 go 1.24.3
 
