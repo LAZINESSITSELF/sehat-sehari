@@ -1,4 +1,3 @@
-# ml_service.py
 from flask import Flask, request, jsonify
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
@@ -6,17 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# --- Preprocessing & Data Simulation Functions ---
-
 def preprocess_input(data):
-    """
-    Mengubah input JSON ke dalam format angka (fitur numerik) untuk prediksi.
-    Input dijadikan array dengan urutan:
-    [age, height, weight, gender, activity_factor, exercise_minutes]
-    
-    - gender: "male" → 0, "female" → 1
-    - activity_level: "sedentary" → 1.2, "moderate" → 1.55, "active" → 1.9  
-    """
     gender = 0 if data.get("gender", "male").lower() == "male" else 1
     al = data.get("activity_level", "sedentary").lower()
     if al == "moderate":
@@ -36,21 +25,6 @@ def preprocess_input(data):
     ]])
 
 def generate_training_data(n_samples=200):
-    """
-    Menghasilkan dataset simulasi dengan n_samples.
-    Fitur:
-      - age (18-65 tahun)
-      - height (150-200 cm)
-      - weight (50-100 kg)
-      - gender: 0 (male) atau 1 (female)
-      - activity_factor: 1.2, 1.55, atau 1.9
-      - exercise_minutes (0-120 menit)
-    Target (calories) dihitung berdasarkan:
-      - BMR Mifflin-St Jeor:
-          * pria: (10×weight) + (6.25×height) – (5×age) + 5
-          * wanita: (10×weight) + (6.25×height) – (5×age) – 161
-      - Target = BMR × activity_factor + (3 × exercise_minutes) + noise  
-    """
     np.random.seed(42)
     X = []
     y = []
@@ -65,7 +39,6 @@ def generate_training_data(n_samples=200):
             bmr = 10 * weight + 6.25 * height - 5 * age + 5
         else:
             bmr = 10 * weight + 6.25 * height - 5 * age - 161
-        # Setiap menit olahraga menambah sekitar 3 kalori
         calories = bmr * activity_factor + 3 * exercise
         noise = np.random.normal(0, 50)
         calories += noise
@@ -73,13 +46,9 @@ def generate_training_data(n_samples=200):
         y.append(calories)
     return np.array(X), np.array(y)
 
-# --- Training the Model ---
-
 X_train, y_train = generate_training_data(200)
 model = RandomForestRegressor(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
-
-# --- Advanced Prediction Function ---
 
 def calculate_recommendation_advanced(data):
     try:
@@ -101,7 +70,7 @@ def calculate_recommendation_advanced(data):
         sport_recommendation = "Jogging ringan 30 menit"
     elif al == "active":
         sport_recommendation = "Lari atau HIIT 30 menit"
-    else:  # sedentary atau default
+    else:
         sport_recommendation = "Jalan santai 20 menit"
 
     menu_recommendation = "Kombinasi sayur, protein tanpa lemak, dan karbohidrat kompleks"
@@ -112,8 +81,6 @@ def calculate_recommendation_advanced(data):
     }
     return result, None
 
-# --- Flask Endpoint ---
-
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
@@ -123,8 +90,6 @@ def predict():
     if error:
         return jsonify({"error": error}), 400
     return jsonify(recommendation), 200
-
-# --- Menjalankan Aplikasi Flask ---
 
 if __name__ == '__main__':
     port = int(os.getenv("ML_PORT", 5000))
