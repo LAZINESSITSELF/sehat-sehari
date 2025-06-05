@@ -1,12 +1,11 @@
 package models
 
-import "time"
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type User struct {
-    ID        int       `json:"id"`
-    Username  string    `json:"username"`
-    Email     string    `json:"email"`
-    Password  string    `json:"password"` // disimpan sebagai hash
-    CreatedAt time.Time `json:"created_at"`
-    UpdatedAt time.Time `json:"updated_at"`
+    ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+    Name         string             `bson:"name" json:"name"`
+    Email        string             `bson:"email" json:"email"`
+    PasswordHash string             `bson:"password_hash" json:"-"`
+    CreatedAt    primitive.DateTime `bson:"created_at,omitempty" json:"created_at"`
 }

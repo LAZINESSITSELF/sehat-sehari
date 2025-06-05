@@ -1,25 +1,10 @@
 import { createApp } from 'vue'
-import './style.css'
-import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
-import Home from './pages/home/Home.vue'
-import Login from './pages/auth/Login.vue'
-import Register from './pages/auth/Register.vue'
-import Profile from './pages/Profile/profile.vue'
+import router from './router'
+import './style.css'  // import Tailwind CSS
 
-const routes = [
-    { path: '/', component: Home },
-    { path: '/login', component: Login },
-    { path: '/register', component: Register },
-    { path: '/profile', component: Profile },
-    
-]
+const app = createApp(App)
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes
-})
+app.use(router)
 
-createApp(App)
-    .use(router)
-    .mount('#app')
+app.mount('#app')

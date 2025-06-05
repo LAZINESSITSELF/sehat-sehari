@@ -1,19 +1,14 @@
 <template>
-  <BaseLayout>
-    <router-view />
-  </BaseLayout>
+  <!-- Komponen root: hanya menampilkan halaman sesuai rute -->
+  <router-view />
 </template>
 
 <script>
-import BaseLayout from './Layouts/BaseLayout.vue'
 export default {
-  name: "App",
-  components: {
-    BaseLayout,
-  }
+  name: 'App',
 }
 </script>
 
-<style scoped>
-
+<style>
+/* Jika Anda ingin menambahkan style global khusus di sini, bisa ditaruh */
 </style>
