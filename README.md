@@ -153,12 +153,3 @@ graph LR
 
 ---
 
-## 📌 Kontak
-
-Untuk pertanyaan, silakan hubungi:  
-📧 bayu@example.com  
-📱 IG: @sehatsehari.app
-
----
-
-Terima kasih telah menggunakan **Sehat Sehari** 💚
